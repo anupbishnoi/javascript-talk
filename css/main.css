@@ -1,0 +1,13 @@
+.nagarroAG-logo {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 236px;
+    height: 94px;
+    opacity: 0.5;
+    background: url(../images/nagarroAG.png) no-repeat;
+}
+
+.reveal code {
+    max-height: 600px;
+}
