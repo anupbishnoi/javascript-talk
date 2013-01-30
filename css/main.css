@@ -11,3 +11,23 @@
 .reveal code {
     max-height: 600px;
 }
+
+.run-code {
+    position: absolute;
+    width: 26px;
+    height: 18px;
+    cursor: pointer;
+    background: url(../images/arrows.png) no-repeat -26px 0;
+}
+
+span.code {
+    border-bottom: 1px dotted black;
+    font-weight: bold;
+}
+
+.humane-bigbox {
+    left: 50% !important;
+    width: auto !important;
+    opacity: 0.6 !important;
+    text-align: left;
+}

@@ -1,6 +1,20 @@
-window.log = function (arg) {
-    console.log(arg);
-};
+// Use Strict Pragma
+(function () {
+    "use strict";
+
+    // CODE
+}());
+// Prevents common JS errors that would fail silently otherwise
+(function () {
+    "use strict";
+
+    var obj = {
+        key: "value",
+        anotherKey: "another value",
+        keyKey: "value value",
+        key: "one more value"
+    };
+}());
 
 // Variables
 (function () {
@@ -15,38 +29,49 @@ window.log = function (arg) {
         nothing = null,
         camelCasedVar = "convention";
 
-    log(undef);   // undefined
+    log(undef);
 
-    // Types can be changed at runtime
+}());
+// Types can be changed at runtime.
+(function () {
+    "use strict";
+
+    var num     = 10,
+        str     = "string",
+        obj     = { property: "value" },
+        func    = function () {},
+        nothing = null;
+
     num = str;
-    str = obj;
-    obj = func = bool = nothing;
+    log(num);
 
-    // Reserved words:
-    // function, for, if, switch, break, etc.
+    str = obj;
+    log(str);
+
+    obj = func = nothing;
+    log(obj);
+    log(func);
+
 }());
 
 // Type determination
 (function () {
     "use strict";
 
-    // Type determination via `typeof`
-    log(typeof "string");    // "string"
-    log(typeof false);       // "boolean"
-    log(typeof undefined);   // "undefined"
-    log(typeof function () {}); // "function"
+    log(typeof "string");
+    log(typeof false);
+    log(typeof undefined);
+    log(typeof function () {});
 
-    log(typeof 245);         // "number"
-    log(typeof 2.7);         // "number"
+    log(typeof 245);
+    log(typeof 2.7);
 
-    log(typeof {k: "v"});    // "object"
-    log(typeof [1, 2]);      // "object"
-    log(typeof (/regExp/i)); // "object"
-    log(typeof new Date());  // "object"
-    log(typeof null);        // "object"
+    log(typeof {k: "v"});
+    log(typeof [1, 2]);
+    log(typeof (/regExp/i));
+    log(typeof new Date());
+    log(typeof null);
 
-    // Better to use a library for this
-    
 }());
 
 // Type conversion
@@ -57,16 +82,16 @@ window.log = function (arg) {
         str = "20",
         floating = "24.9";
 
-    log(num.toString());    // "10"
-    log(String(num));       // "10"
-    log("" + num);          // "10"
+    log(num.toString());
+    log(String(num));
+    log("" + num);
 
-    log(Number(str));           // 20
-    log(parseInt(str, 10));     // 20
-    log(parseFloat(floating));  // 24.9
+    log(Number(str));
+    log(parseInt(str, 10));
+    log(parseFloat(floating));
 
-    log(+str);                  // 20
-    log(+floating);             // 24.9
+    log(+str);
+    log(+floating);
 
 }());
 
@@ -74,18 +99,18 @@ window.log = function (arg) {
 (function () {
     "use strict";
 
-    log("" == []);      // true
-    log(0 == []);       // true
-    log("1" == [1]);    // true
+    log("" == []);
+    log(0 == []);
+    log("1" == [1]);
 
-    log("" == 0);       // true
-    log(0 == " ");      // true
-    log("" == " ");     // false
+    log("" == 0);
+    log(0 == " ");
+    log("" == " ");
 
-    log(24 == "twenty four"); // false
-    log(24 == "24");          // true
+    log(24 == "twenty four");
+    log(24 == "24");
 
-    log(null == undefined); // true
+    log(null == undefined);
 
     // Never use == or !=
 }());
@@ -94,18 +119,18 @@ window.log = function (arg) {
 (function () {
     "use strict";
 
-    log("" === []);      // false
-    log(0 === []);       // false
-    log("1" === [1]);    // false
+    log("" === []);
+    log(0 === []);
+    log("1" === [1]);
 
-    log("" === 0);       // false
-    log(0 === " ");      // false
-    log("" === " ");     // false
+    log("" === 0);
+    log(0 === " ");
+    log("" === " ");
 
-    log(24 === "twenty four"); // false
-    log(24 === "24");          // false
+    log(24 === "twenty four");
+    log(24 === "24");
 
-    log(null === undefined); // false
+    log(null === undefined);
 
     // Always use === and !==
 }());
@@ -140,12 +165,12 @@ window.log = function (arg) {
 
     var obj = { property: "value" };
 
-    log(obj.property);     // "value"
-    log(obj["property"]);  // "value"
+    log(obj.property);
+    log(obj["property"]);
 
     // New object properties can be created
     obj.anotherProp = 56;
-    log(obj.anotherProp);  // 56
+    log(obj.anotherProp);
 
     // obj.constructor is predefined
 
@@ -201,21 +226,21 @@ window.log = function (arg) {
     "use strict";
 
     var arr = [1, 2, 3];
-    log(arr.length); // 3
+    log(arr.length);
 
-    arr.push("4");      // [1, 2, 3, "4"]
-    arr.pop();          // [1, 2, 3]
-    arr.unshift([0]);   // [[0], 1, 2, 3]
-    arr.shift();        // [1, 2, 3]
-    arr[4] = "value";   // [1, 2, 3, undefined, "value"]
-    arr.splice(1, 4, "2", "3"); // [1, "2", "3"]
+    arr.push("4");
+    arr.pop();
+    arr.unshift([0]);
+    arr.shift();
+    arr[4] = "value";
+    arr.splice(1, 4, "2", "3");
 
-    log(arr.concat(4));     // [1, 2, 3, 4]
-    log(arr.concat([4]));   // [1, 2, 3, 4]
+    log(arr.concat(4));
+    log(arr.concat([4]));
 
-    log(arr[-1]);   // undefined
-    log(arr[1]);    // 2
-    log(arr[3]);    // undefined
+    log(arr[-1]);
+    log(arr[1]);
+    log(arr[3]);
 
 }());
 
@@ -230,14 +255,14 @@ window.log = function (arg) {
             2: 2
         };
 
-    log(arr[1]);    // 1
-    log(obj[1]);    // 1
+    log(arr[1]);
+    log(obj[1]);
 
     arr.property = "value";
-    log(arr.property);  // "value"
+    log(arr.property);
 
     // Since object keys can only be strings
-    log(arr["1"]);  // 1
+    log(arr["1"]);
 
     // Don't use for-in loops with arrays
 }());
@@ -251,10 +276,10 @@ window.log = function (arg) {
     };
 
     // Guard Operator
-    log(obj && obj.func && obj.func()); // 99
+    log(obj && obj.func && obj.func());
 
     // Default Operator
-    log(obj.nope || obj.func() || 100); // 99
+    log(obj.nope || obj.func() || 100);
 }());
 
 // Throw stuff!
@@ -289,7 +314,7 @@ window.log = function (arg) {
         log("this never to show up");
 
     } catch (e) {
-        log(e.message); // "haha"
+        log(e.message);
     }
 
 }());

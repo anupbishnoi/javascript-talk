@@ -1,15 +1,15 @@
 (function () {
     "use strict";
 
-    window.snippets = [];
+    window.snippets = {};
 
     var logQueue = [];
     window.log = function (arg) {
-        logQueue.push(arg);
+        logQueue.push("<pre>" + JSON.stringify(arg) + "</pre>");
     };
 
     var humane = window.humane;
-    var bigbox = humane.create({
+    var bigbox = window.bigbox = humane.create({
         baseCls: "humane-bigbox",
         timeout: 3000
     });
@@ -19,7 +19,7 @@
     });
     bigbox.error = bigbox.spawn({
         addnCls: "humane-bigbox-error",
-        timeout: 2000
+        timeout: 4000
     });
     bigbox.info = bigbox.spawn({
         addnCls: "humane-bigbox-info",
@@ -30,20 +30,24 @@
         bigbox.remove();
         if (logQueue.length) {
             bigbox.log(logQueue.shift());
-        } else {
-            bigbox.info("That's it!");
         }
     };
 
     window.runCode = function () {
-        var slideNo = +window.location.hash.match(/^#\/([0-9]+)/)[1];
-        if (window.snippets[slideNo]) {
+        var hash = window.location.hash,
+            hIndexMatch = hash.match(/^#\/([0-9]+)/),
+            vIndexMatch = hash.match(/^#\/[0-9]+\/([0-9]+)$/),
+            hIndex = (hIndexMatch && hIndexMatch[1]) || "0",
+            vIndex = (vIndexMatch && vIndexMatch[1]) || "0",
+            slideIndex = hIndex + "/" + vIndex;
+
+        if (window.snippets[slideIndex]) {
             if (!logQueue.length) {
                 try {
-                    eval(window.snippets[slideNo]);
+                    eval(window.snippets[slideIndex]);
                     bigbox.info("Loaded.");
                 } catch (e) {
-                    bigbox.error("Threw up! " + e.message);
+                    bigbox.error(e.message);
                     logQueue = [];
                 }
             } else {
@@ -54,13 +58,27 @@
         }
     };
 
+    window.runCodeAndShowLog = function () {
+        if (!logQueue.length) {
+            window.runCode();
+        } else {
+            window.showLog();
+        }
+    };
+
     function highlightLoaded() {
         $(document).ready(function () {
             $("pre code").each(function (i, block) {
-                var slideNo = $(block)
-                    .closest(".reveal > .slides > section")
-                    .index();
-                window.snippets[slideNo] = $(block).text();
+                var hSection = $(block).closest(".reveal > .slides > section"),
+                    hIndex = (hSection.length && String(hSection.index())) || "0",
+                    vSection = $(block).closest(".reveal > .slides > section > section"),
+                    vIndex = (vSection.length && String(vSection.index())) || "0",
+                    slideIndex = hIndex + "/" + vIndex;
+
+                window.snippets[slideIndex] = $(block).text();
+                $("<div class='run-code' title='Run Code'></div>")
+                    .insertBefore($(block).closest("pre"))
+                    .bind("click", window.runCodeAndShowLog);
                 hljs.highlightBlock(block);
             });
         });
@@ -98,21 +116,21 @@
     });
 
     // Remote control!
-    new Remotes("preview")
-        .on("swipe-left", function (e) {
-            Reveal.right();
-        })
-        .on("swipe-right", function (e) {
-            Reveal.left();
-        })
-        .on("swipe-up", function (e) {
-            Reveal.down();
-        })
-        .on("swipe-down", function (e) {
-            Reveal.up();
-        })
-        .on("hold", runCode)
-        .on("tap", showLog);
+    //new Remotes("preview")
+        //.on("swipe-left", function (e) {
+            //Reveal.right();
+        //})
+        //.on("swipe-right", function (e) {
+            //Reveal.left();
+        //})
+        //.on("swipe-up", function (e) {
+            //Reveal.down();
+        //})
+        //.on("swipe-down", function (e) {
+            //Reveal.up();
+        //})
+        //.on("hold", runCode)
+        //.on("tap", showLog);
 
 
 }());

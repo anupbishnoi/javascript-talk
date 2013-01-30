@@ -53,75 +53,164 @@
 				</section>
 
 				<section>
-					<h2>Heads Up</h2>
-					<p>
-						reveal.js is a framework for easily creating beautiful presentations using HTML. You'll need a browser with
-						support for CSS 3D transforms to see it in its full glory.
-					</p>
-
-					<aside class="notes">
-						Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
-					</aside>
-				</section>
-
-				<!-- Example of nested vertical slides -->
-				<section>
-					<section>
-						<h2>Vertical Slides</h2>
-						<p>
-							Slides can be nested inside of other slides,
-							try pressing <a href="#" class="navigate-down">down</a>.
-						</p>
-						<a href="#" class="image navigate-down">
-							<img width="178" height="238" src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Down arrow">
-						</a>
-					</section>
-					<section>
-						<h2>Basement Level 1</h2>
-						<p>Press down or up to navigate.</p>
-					</section>
-					<section>
-						<h2>Basement Level 2</h2>
-						<p>Cornify</p>
-						<a class="test" href="http://cornify.com">
-							<img width="280" height="326" src="https://s3.amazonaws.com/hakim-static/reveal-js/cornify.gif" alt="Unicorn">
-						</a>
-					</section>
-					<section>
-						<h2>Basement Level 3</h2>
-						<p>That's it, time to go back up.</p>
-						<a href="#/2" class="image">
-							<img width="178" height="238" src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Up arrow" style="-webkit-transform: rotate(180deg);">
-						</a>
-					</section>
+                    <a class="image" href="https://brendaneich.com/">
+                        <img src="images/brendan.jpeg" alt="Brendan Eich">
+                    </a>
+                    <h2>Brendan Eich</h2>
+                    <h5>CTO, Mozilla Corporation</h5>
+                    <br>
+                    <p>Created JavaScript in 10 days</p>
 				</section>
 
 				<section>
-					<h4>Exception Handling</h4>
+                    <h2>Agenda</h2><br>
+                    <ul>
+                        <li>Basics</li><br>
+                        <li>Advanced Concepts</li><br>
+                        <li>JSON</li><br>
+                        <li>Libraries</li><br>
+                        <li>Developer Resources</li><br>
+                        <li>Platforms</li><br>
+				</section>
+
+                <section data-state="soothe">
+                    <h1>Basics</h1>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Use Strict Pragma</h3>
+                        <pre><code>
+(function () {
+    "use strict";
+
+    // CODE
+}());
+                        </code></pre>
+                        <p>ECMAScript 5 Strict Mode</p>
+                    </section>
+                    <section>
+                        <pre><code>
+(function () {
+    "use strict";
+
+    var obj = {
+        key: "value",
+        anotherKey: "another value",
+        keyKey: "value value",
+        key: "one more value"
+    };
+}());
+                        </code></pre>
+                        <p>Prevents common JS errors that would fail silently otherwise</p>
+                    </section>
+                </section>
+
+                <section>
+                    <h3>Variables</h3>
                     <pre><code>
-    (function () {
-        "use strict";
+(function () {
+    "use strict";
 
-        try {
+    var undef,
+        num     = 10,
+        str     = "string",
+        bool    = false,
+        obj     = { property: "value" },
+        func    = function () {},
+        nothing = null,
+        camelCasedVar = "convention";
 
-            log("this about to throw up");
-            throw {
-                code: 201,
-                message: "haha"
-            };
-            log("this never to show up");
+    log(undef);
 
-        } catch (e) {
-            log(e.message); // "haha"
-        }
-
-    }());
+}());
                     </code></pre>
-				</section>
+                    <p>Default value is <em>undefined</em></p>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Types</h3>
+                        <pre><code>
+(function () {
+    "use strict";
+
+    var num     = 10,
+        str     = "string",
+        obj     = { property: "value" },
+        func    = function () {},
+        nothing = null;
+
+    num = str;
+    log(num);
+
+    str = obj;
+    log(str);
+
+    obj = func = nothing;
+    log(obj);
+    log(func);
+
+}());
+                        </code></pre>
+                        <p>Types can be changed at runtime.</p>
+                    </section>
+
+                    <section>
+                        <h3>Type Determination</h3>
+                        <pre><code>
+(function () {
+    "use strict";
+
+    log(typeof "string");
+    log(typeof false);
+    log(typeof undefined);
+    log(typeof function () {});
+
+    log(typeof 245);
+    log(typeof 2.7);
+
+    log(typeof {k: "v"});
+    log(typeof [1, 2]);
+    log(typeof (/regExp/i));
+    log(typeof new Date());
+    log(typeof null);
+
+}());
+                        </code></pre>
+                        <p>Better to use a library for this.</p>
+                    </section>
+
+                    <section>
+                        <h3>Type Conversion</h3>
+                        <pre><code>
+(function () {
+    "use strict";
+
+    var num = 10,
+        str = "20",
+        floating = "24.9";
+
+    log(num.toString());
+    log(String(num));
+    log("" + num);
+
+    log(Number(str));
+    log(parseInt(str, 10));
+    log(parseFloat(floating));
+
+    log(+str);
+    log(+floating);
+
+}());
+                        </code></pre>
+                        <p>Multiple ways to do it.</p>
+                        <p>Prefer <span class="code">String(10)</span> and <span class="code">+"10"</span></p>
+                    </section>
+                </section>
 
 				<section>
 					<h1>THE END</h1>
-					<h3>BY Hakim El Hattab / hakim.se</h3>
 				</section>
 
 			</div>
@@ -133,7 +222,7 @@
 		<script src="lib/js/zepto.js"></script>
 		<script src="lib/js/humane.js"></script>
 
-        <script src="https://raw.github.com/Remotes/Remotes/master/dist/remotes.ne.min.js"></script>
+        <!--<script src="https://raw.github.com/Remotes/Remotes/master/dist/remotes.ne.min.js"></script>-->
 
         <script type="text/javascript" src="js/main.js"></script>
 
