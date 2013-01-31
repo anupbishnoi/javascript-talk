@@ -8,26 +8,20 @@
         logQueue.push("<pre>" + JSON.stringify(arg) + "</pre>");
     };
 
-    function makeSlideKey(hIndex, vIndex) {
-        return hIndex + "/" + vIndex;
+    function makeSlideKey(indices) {
+        return String(indices.h) + "/" + String(indices.v);
     }
 
     function currentSlideKey() {
-        var hash = window.location.hash,
-            hIndexMatch = hash.match(/^#\/([0-9]+)/),
-            vIndexMatch = hash.match(/^#\/[0-9]+\/([0-9]+)$/),
-            hIndex = (hIndexMatch && hIndexMatch[1]) || "0",
-            vIndex = (vIndexMatch && vIndexMatch[1]) || "0";
-
-        return makeSlideKey(hIndex, vIndex);
+        return makeSlideKey(Reveal.getIndices());
     }
 
     function currentSlideKeyFromElem(block) {
         var hSection = $(block).closest(".reveal > .slides > section"),
-            hIndex = (hSection.length && String(hSection.index())) || "0",
             vSection = $(block).closest(".reveal > .slides > section > section"),
-            vIndex = (vSection.length && String(vSection.index())) || "0";
-        return makeSlideKey(hIndex, vIndex);
+            h = (hSection.length && hSection.index()) || 0,
+            v = (vSection.length && vSection.index()) || 0;
+        return makeSlideKey({ h: h, v: v });
     }
 
     function highlightLoaded() {
