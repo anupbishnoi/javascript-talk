@@ -15,9 +15,9 @@
 .run-code {
     position: absolute;
     width: 26px;
-    height: 18px;
+    height: 26px;
     cursor: pointer;
-    background: url(../images/arrows.png) no-repeat -26px 0;
+    background: url(../images/glyphicons/glyphicons_220_play_button.png) no-repeat;
 }
 
 span.code {

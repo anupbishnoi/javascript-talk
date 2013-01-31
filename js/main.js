@@ -22,21 +22,31 @@
         return makeSlideKey(hIndex, vIndex);
     }
 
+    function currentSlideKeyFromElem(block) {
+        var hSection = $(block).closest(".reveal > .slides > section"),
+            hIndex = (hSection.length && String(hSection.index())) || "0",
+            vSection = $(block).closest(".reveal > .slides > section > section"),
+            vIndex = (vSection.length && String(vSection.index())) || "0";
+        return makeSlideKey(hIndex, vIndex);
+    }
+
     function highlightLoaded() {
         $(document).ready(function () {
-            $("pre code").each(function (i, block) {
-                var hSection = $(block).closest(".reveal > .slides > section"),
-                    hIndex = (hSection.length && String(hSection.index())) || "0",
-                    vSection = $(block).closest(".reveal > .slides > section > section"),
-                    vIndex = (vSection.length && String(vSection.index())) || "0",
-                    slideKey = makeSlideKey(hIndex, vIndex);
+            $("pre code")
+                .each(function (i, block) {
+                    var slideKey = currentSlideKeyFromElem(block);
+                    window.snippets[slideKey] = $(block).text();
 
-                window.snippets[slideKey] = $(block).text();
-                $("<div class='run-code' title='Run Code'></div>")
-                    .insertBefore($(block).closest("pre"))
-                    .bind("click", window.runCodeAndShowLog);
-                hljs.highlightBlock(block);
-            });
+                    $("<div class='run-code' title='Run Code'></div>")
+                        .insertBefore($(block).closest("pre"))
+                        .bind("click", window.runCodeAndShowLog);
+                    hljs.highlightBlock(block);
+                })
+                .on("focusout", function (e) {
+                    var slideKey = currentSlideKeyFromElem(e.currentTarget);
+                    window.snippets[slideKey] = $(e.currentTarget).text();
+                    logQueue = [];
+                });
         });
     }
 
@@ -78,18 +88,16 @@
 
         previousSlideKey = slideKey;
         bigbox.remove();
-        if (window.snippets[slideKey]) {
-            if (!logQueue.length) {
+        if (window.snippets[slideKey] != null) {
+            logQueue = [];
+            setTimeout(function () {
                 try {
                     eval(window.snippets[slideKey]);
                     bigbox.info("Loaded.");
                 } catch (e) {
                     bigbox.error(e.message);
-                    logQueue = [];
                 }
-            } else {
-                bigbox.error("Got logs to show.");
-            }
+            }, 1);
         } else {
             bigbox.error("No code on this slide.");
         }
