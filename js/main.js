@@ -8,6 +8,38 @@
         logQueue.push("<pre>" + JSON.stringify(arg) + "</pre>");
     };
 
+    function makeSlideKey(hIndex, vIndex) {
+        return hIndex + "/" + vIndex;
+    }
+
+    function currentSlideKey() {
+        var hash = window.location.hash,
+            hIndexMatch = hash.match(/^#\/([0-9]+)/),
+            vIndexMatch = hash.match(/^#\/[0-9]+\/([0-9]+)$/),
+            hIndex = (hIndexMatch && hIndexMatch[1]) || "0",
+            vIndex = (vIndexMatch && vIndexMatch[1]) || "0";
+
+        return makeSlideKey(hIndex, vIndex);
+    }
+
+    function highlightLoaded() {
+        $(document).ready(function () {
+            $("pre code").each(function (i, block) {
+                var hSection = $(block).closest(".reveal > .slides > section"),
+                    hIndex = (hSection.length && String(hSection.index())) || "0",
+                    vSection = $(block).closest(".reveal > .slides > section > section"),
+                    vIndex = (vSection.length && String(vSection.index())) || "0",
+                    slideKey = makeSlideKey(hIndex, vIndex);
+
+                window.snippets[slideKey] = $(block).text();
+                $("<div class='run-code' title='Run Code'></div>")
+                    .insertBefore($(block).closest("pre"))
+                    .bind("click", window.runCodeAndShowLog);
+                hljs.highlightBlock(block);
+            });
+        });
+    }
+
     var humane = window.humane;
     var bigbox = window.bigbox = humane.create({
         baseCls: "humane-bigbox",
@@ -26,25 +58,30 @@
         timeout: 1000
     });
 
-    window.showLog = function () {
-        bigbox.remove();
-        if (logQueue.length) {
-            bigbox.log(logQueue.shift());
+    var previousSlideKey = null;
+    window.showLog = function showLog() {
+        var slideKey = currentSlideKey();
+
+        if (slideKey === previousSlideKey) {
+            bigbox.remove();
+            if (logQueue.length) {
+                bigbox.log(logQueue.shift());
+            }
+        } else {
+            logQueue = [];
+            window.runCode();
         }
     };
 
     window.runCode = function () {
-        var hash = window.location.hash,
-            hIndexMatch = hash.match(/^#\/([0-9]+)/),
-            vIndexMatch = hash.match(/^#\/[0-9]+\/([0-9]+)$/),
-            hIndex = (hIndexMatch && hIndexMatch[1]) || "0",
-            vIndex = (vIndexMatch && vIndexMatch[1]) || "0",
-            slideIndex = hIndex + "/" + vIndex;
+        var slideKey = currentSlideKey();
 
-        if (window.snippets[slideIndex]) {
+        previousSlideKey = slideKey;
+        bigbox.remove();
+        if (window.snippets[slideKey]) {
             if (!logQueue.length) {
                 try {
-                    eval(window.snippets[slideIndex]);
+                    eval(window.snippets[slideKey]);
                     bigbox.info("Loaded.");
                 } catch (e) {
                     bigbox.error(e.message);
@@ -65,24 +102,6 @@
             window.showLog();
         }
     };
-
-    function highlightLoaded() {
-        $(document).ready(function () {
-            $("pre code").each(function (i, block) {
-                var hSection = $(block).closest(".reveal > .slides > section"),
-                    hIndex = (hSection.length && String(hSection.index())) || "0",
-                    vSection = $(block).closest(".reveal > .slides > section > section"),
-                    vIndex = (vSection.length && String(vSection.index())) || "0",
-                    slideIndex = hIndex + "/" + vIndex;
-
-                window.snippets[slideIndex] = $(block).text();
-                $("<div class='run-code' title='Run Code'></div>")
-                    .insertBefore($(block).closest("pre"))
-                    .bind("click", window.runCodeAndShowLog);
-                hljs.highlightBlock(block);
-            });
-        });
-    }
 
     Reveal.initialize({
         controls: true,
