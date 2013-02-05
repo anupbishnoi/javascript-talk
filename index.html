@@ -66,7 +66,7 @@
                     <h2>Brendan Eich</h2>
                     <h5>CTO, Mozilla Corporation</h5>
                     <br>
-                    <p>Created JavaScript in 10 days</p>
+                    <p>Created JavaScript in 10 days.</p>
 				</section>
 
 				<section>
@@ -85,6 +85,17 @@
                 </section>
 
                 <section>
+                    <h3>Rapid History</h3><br>
+                    <ul>
+                        <li>Created in 1995 by Brendan Eich for Netscape</li><br>
+                        <li>Formal spec name: <em>ECMAScript</em></li><br>
+                        <li>ES3 supported across all browsers</li><br>
+                        <li>ES4 was a mess, never got implemented</li><br>
+                        <li>ES5 is the latest edition, gaining acceptance</li><br>
+                    </ul>
+                </section>
+
+                <section>
                     <section>
                         <h3>Use Strict Pragma</h3>
                         <pre><code contenteditable>
@@ -97,6 +108,7 @@
                         <p>ECMAScript 5 Strict Mode</p>
                     </section>
                     <section>
+                        <h3>Death to bugs</h3>
                         <pre><code contenteditable>
 (function () {
     "use strict";
@@ -109,30 +121,98 @@
     };
 }());
                         </code></pre>
-                        <p>Prevents common JS errors that would fail silently otherwise</p>
+                        <p>Duplicate key not allowed in object.</p>
+                    </section>
+                    <section>
+                        <h3>Best Practice</h3>
+                        <pre><code contenteditable>
+globalVar = "global value";
+(function () {
+    "use strict";
+
+    log(window.globalVar);
+
+    str = "global";
+
+}());
+                        </code></pre>
+                        <p>Unintended global namespace pollution<br>
+                        not allowed.</p>
                     </section>
                 </section>
 
                 <section>
-                    <h3>Variables</h3>
-                    <pre><code contenteditable>
+                    <section>
+                        <h3>Variables</h3>
+                        <pre><code contenteditable>
+    (function () {
+        "use strict";
+
+        var undef,
+            num     = 10,
+            str     = "string",
+            bool    = false,
+            obj     = { property: "value" },
+            func    = function () {},
+            nothing = null,
+            camelCasedVar = "convention";
+
+        log(undef);
+
+    }());
+                        </code></pre>
+                        <p>Default value for unassigned variable is <em>undefined</em>.</p>
+                    </section>
+
+                    <section>
+                        <h3>Scope</h3>
+                        <pre><code contenteditable>
 (function () {
     "use strict";
 
-    var undef,
-        num     = 10,
-        str     = "string",
-        bool    = false,
-        obj     = { property: "value" },
-        func    = function () {},
-        nothing = null,
-        camelCasedVar = "convention";
+    var outer = "outer value";
 
-    log(undef);
+    function func() {
+        var inner = "inner value";
+
+        log(outer);
+        log(inner);
+    }
+
+    func();
+
+    log(outer);
+    log(inner);
 
 }());
-                    </code></pre>
-                    <p>Default value is <em>undefined</em></p>
+                        </code></pre>
+                        <p>Variable scope is simply the function scope,<br>
+                        not block scope.</p>
+                    </section>
+
+                    <section>
+                        <h3>Function Hoisting</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var func1,
+        func2 = function () { return "func2"; };
+
+    log(func1);
+    log(func2());
+    log(func3());
+
+    func1 = function () { return "func1"; };
+    log(func1());
+
+    function func3() { return "func3"; }
+
+}());
+                        </code></pre>
+                        <p>Function declarations get <em>hoisted</em>,<br>
+                        at the top of scope.</p>
+                    </section>
                 </section>
 
                 <section>
@@ -212,8 +292,416 @@
 }());
                         </code></pre>
                         <p>Multiple ways to do it.</p>
-                        <p>Prefer <span class="code">String(10)</span> and <span class="code">+"10"</span></p>
+                        <p>Prefer <span class="code">String(10)</span> and <span class="code">+"10"</span>.</p>
                     </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Wrong Equality Checking</h3>
+                        <pre><code contenteditable>
+    (function () {
+        "use strict";
+
+        log("" == []);
+        log(0 == []);
+        log("1" == [1]);
+
+        log("" == 0);
+        log(0 == " ");
+        log("" == " ");
+
+        log(24 == "twenty four");
+        log(24 == "24");
+
+        log(null == undefined);
+
+    }());
+                        </code></pre>
+                        <p>
+                            Never use <span class="code">==</span>,
+                            or <span class="code">!=</span>.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h3>Correct Equality Checking</h3>
+                        <pre><code contenteditable>
+    (function () {
+        "use strict";
+
+        log("" === []);
+        log(0 === []);
+        log("1" === [1]);
+
+        log("" === 0);
+        log(0 === " ");
+        log("" === " ");
+
+        log(24 === "twenty four");
+        log(24 === "24");
+
+        log(null === undefined);
+
+    }());
+                        </code></pre>
+                        <p>
+                            Always use <span class="code">==</span>,
+                            or <span class="code">!=</span>.
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Object Creation</h3>
+                        <pre><code contenteditable>
+    (function () {
+        "use strict";
+
+        var o1 = {
+            property: "o1 property"
+        };
+        log(o1.property);
+
+        // or
+        var o2 = {};
+        o2.property = "o2 property";
+        log(o2.property);
+
+        // or
+        function ClassName() {
+            this.property = "o3 property";
+        }
+        var o3 = new ClassName();
+        log(o3.property);
+    }());
+                        </code></pre>
+                        <p>Don't use these words as property names:<br>
+                        <span class="code">constructor</span>,
+                        <span class="code">hasOwnProperty</span>,<br>
+                        reserved words, etc.
+                    </section>
+
+                    <section>
+                        <h3>Object Property Access</h3>
+                        <pre><code contenteditable>
+    (function () {
+        "use strict";
+
+        var obj = { property: "value" };
+
+        log(obj.property);
+        log(obj["property"]);
+
+        // New object properties can be created
+        obj.anotherProp = 56;
+        log(obj.anotherProp);
+
+    }());
+                        </code></pre>
+                        <p>Dot notation access is slightly faster.</p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Prototype Chain</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var obj = { property: "value" };
+
+    function MyClass() {
+        this.ownProperty = "something";
+    }
+    MyClass.prototype = obj;
+
+    var newObj = new MyClass();
+
+    var prop;
+    for (prop in newObj) {
+        log(prop);
+        log(newObj[prop]);
+    }
+
+    log(newObj.toString());
+}());
+                        </code></pre>
+                        <p>Walking the prototype chain,<br>
+                        upto <span class="code">Object.prototype</span>.</p>
+                    </section>
+
+                    <section>
+                        <h3>Better Enumeration</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var obj = { property: "value" };
+
+    function MyClass() {
+        this.anotherProp = "something";
+    }
+    MyClass.prototype = obj;
+
+    var newObj = new MyClass();
+
+    var prop;
+    for (prop in newObj) {
+        if (newObj.hasOwnProperty(prop)) {
+            log(prop);
+            log(newObj[prop]);
+        }
+    }
+}());
+                        </code></pre>
+                        <p>Unless <span class="code">newObj.hasOwnProperty</span>
+                        has been overridden.</p>
+                    </section>
+                </section>
+
+                <section>
+                    <h3>Inheritance</h3>
+                    <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    function BaseClass() {
+        this.property = "value";
+    }
+
+    function InheritedClass() {
+        this.ownProperty = "own value";
+    }
+
+    InheritedClass.prototype = new BaseClass();
+
+    var obj = new InheritedClass();
+
+    log(obj.ownProperty);
+    log(obj.property);
+
+}());
+                    </code></pre>
+                    <p>Setting up the prototype chain.</p>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Arrays</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var arr = [1, 2, 3, 4];
+    log(arr.length);
+
+    arr.push(5);                    log(arr);
+    arr.pop();                      log(arr);
+    arr.unshift(0);                 log(arr);
+    arr.shift();                    log(arr);
+
+    arr.splice(1, 2);               log(arr);
+    arr.splice(1, 0, 20, 25, 30);   log(arr);
+
+    log(arr.concat([5]));
+    log(arr.concat(5));
+
+}());
+                        </code></pre>
+                        <p><span class="code">splice</span> alters the array,<br>
+                        <span class="code">concat</span> returns a new array.</p>
+                    </section>
+
+                    <section>
+                        <h3>Dynamic Typing</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var arr = ["one", 2, [1, 2, 3]];
+
+    log(arr);
+    log(arr[2][2]);
+
+    // another way to `push`
+    arr[arr.length] = function () { return 100; };
+
+    log(arr[3]);
+    log(arr[3]());
+
+    // Out of bounds
+    log(arr[-1]);
+    log(arr[100]);
+}());
+                        </code></pre>
+                        <p>Accessing non-existent indices returns
+                        <span class="code">undefined</span>,<br>
+                        just as in objects.</p>
+                    </section>
+
+                    <section>
+                        <h3>Arrays are Objects</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var arr = [0, 1, 2],
+        obj = {
+            0: 0,
+            1: 1,
+            2: 2
+        };
+
+    log(arr[1]);
+    log(obj[1]);
+
+    arr.property = "value";
+    log(arr.property);
+
+    // Since object keys can only be strings
+    log(arr["1"]);
+}());
+                        </code></pre>
+                        <p><span class="code">arr.length</span> is simply<br>
+                        <em>(largest numeric key in array) + 1</em>
+                    </section>
+
+                    <section>
+                        <h3>Looping</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var arr = ["zero", "one"];
+
+    log("Using regular for loop");
+    for (var i = 0; i < arr.length ; i++) {
+        log(i);
+        log(arr[i]);
+    }
+
+    log("Using Array#forEach");
+    // native in ES5 (needs a library in ES3)
+    arr.forEach(function (value, index) {
+        log(index);
+        log(value);
+    });
+
+}());
+                        </code></pre>
+                        <p>Don't use <span class="code">for...in</span><br>
+                        to loop over an array.</p>
+                    </section>
+                </section>
+
+                <section>
+                    <h3>&& and ||</h3>
+                    <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var obj = {
+        func: function () { return 99; }
+    };
+
+    // Guard Operator
+    log(obj && obj.func && obj.func());
+
+    // Default Operator
+    obj.property = obj.property || obj.func();
+    log(obj.property);
+
+}());
+                    </code></pre>
+                    <p>Guard against calling <span class="code">null</span> /
+                    <span class="code">undefined</span> as functions.</p>
+                    <p>Assign default values to parameters.</p>
+                </section>
+
+                <section>
+                    <section>
+                        <h3>Exception Handling</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var obj = {};
+
+    try {
+
+        log(1/0);
+        obj.nonExistentFunc();
+
+    } catch (e) {
+        log("error caught, no harm done.");
+        log(e.toString());
+        log(e.name + ": " + e.message);
+    }
+
+    "here".is.an = "uncaught error";
+    
+}());
+                        </code></pre>
+                        <p>Web pages become unreliable<br>
+                        after an uncaught error</p>
+                    </section>
+
+                    <section>
+                        <h3>Throw your own errors</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    try {
+
+        throw new Error("My custom error");
+
+    } catch (e) {
+        log(e.toString());
+
+        try {
+            throw new TypeError("Why U Mix Types");
+        } catch (err) {
+            log(err.toString());
+        }
+    }
+
+}());
+                        </code></pre>
+                        <p>Nested <span class="code">try...catch</span></p>
+                    </section>
+
+                    <section>
+                        <h3>Throw anything</h3>
+                        <pre><code contenteditable>
+(function () {
+    "use strict";
+
+    var anything = {
+        code: 201,
+        name: "SomeErrorClass",
+        message: "Just got thrown",
+        toString: function () {
+            return "[ " + this.name + ": " + this.message + " ]";
+        }
+    };
+
+    throw anything;
+
+}());
+                        </code></pre>
+                        <p>Create new custom error types maybe</p>
+                    </section>
+                </section>
+
+                <section>
+                    <h3>Debugger</h3>
+                    <pre><code contenteditable>
+                    </code></pre>
+                    <p></p>
                 </section>
 
 				<section>

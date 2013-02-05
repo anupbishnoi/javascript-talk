@@ -1,11 +1,16 @@
 (function () {
-    "use strict";
 
     window.snippets = {};
 
     var logQueue = [];
     window.log = function (arg) {
-        logQueue.push("<pre>" + JSON.stringify(arg) + "</pre>");
+        if (typeof arg === "function") {
+            logQueue.push(arg);
+        } else if (typeof arg === "object") {
+            logQueue.push("<pre>" + JSON.stringify(arg) + "</pre>");
+        } else {
+            logQueue.push("<pre>" + arg.toString() + "</pre>");
+        }
     };
 
     function makeSlideKey(indices) {
@@ -64,12 +69,18 @@
 
     var previousSlideKey = null;
     window.showLog = function showLog() {
-        var slideKey = currentSlideKey();
+        var slideKey = currentSlideKey(),
+            logToShow;
 
         if (slideKey === previousSlideKey) {
             bigbox.remove();
             if (logQueue.length) {
-                bigbox.log(logQueue.shift());
+                logToShow = logQueue.shift();
+                if (typeof logToShow === "function") {
+                    logToShow();
+                } else {
+                    bigbox.log(logToShow);
+                }
             }
         } else {
             logQueue = [];
@@ -87,9 +98,16 @@
             setTimeout(function () {
                 try {
                     eval(window.snippets[slideKey]);
-                    bigbox.info("Loaded.");
                 } catch (e) {
-                    bigbox.error(e.message);
+                    log(function () {
+                        bigbox.error(
+                            e.hasOwnProperty("toString") ?
+                                e.toString() :
+                                e.name + ": " + e.message
+                        );
+                    });
+                } finally {
+                    bigbox.info("Loaded");
                 }
             }, 1);
         } else {

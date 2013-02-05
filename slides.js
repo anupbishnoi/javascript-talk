@@ -15,6 +15,16 @@
         key: "one more value"
     };
 }());
+// Prevents unintended global namespace pollution
+globalVar = "global value";
+(function () {
+    "use strict";
+
+    log(window.globalVar);
+
+    str = "global";
+
+}());
 
 // Variables
 (function () {
@@ -32,6 +42,43 @@
     log(undef);
 
 }());
+// Variable scope is simply the function scope
+(function () {
+    "use strict";
+
+    var outer = "outer value";
+
+    function func() {
+        var inner = "inner value";
+
+        log(outer);
+        log(inner);
+    }
+
+    func();
+
+    log(outer);
+    log(inner);
+
+}());
+// `function` declarations get "hoisted" at top of scope
+(function () {
+    "use strict";
+
+    var func1,
+        func2 = function () { return "func2"; };
+
+    log(func1);
+    log(func2());
+    log(func3());
+
+    func1 = function () { return "func1"; };
+    log(func1());
+
+    function func3() { return "func3"; }
+
+}());
+
 // Types can be changed at runtime.
 (function () {
     "use strict";
@@ -112,7 +159,6 @@
 
     log(null == undefined);
 
-    // Never use == or !=
 }());
 
 // Correct Equality Checking
@@ -132,7 +178,6 @@
 
     log(null === undefined);
 
-    // Always use === and !==
 }());
 
 // Object Creation
@@ -140,23 +185,21 @@
     "use strict";
 
     var o1 = {
-        property: "value"
+        property: "o1's value"
     };
+    log(o1.property);
 
     // or
-
     var o2 = {};
-    o2.property = "value";
+    o2.property = "o2's value";
+    log(o2.property);
 
     // or
-
     function ClassName() {
-        this.property = "value";
+        this.property = "o3's value";
     }
     var o3 = new ClassName();
-
-    // or Object.create
-
+    log(o3.property);
 }());
 
 // Object Property Access
@@ -172,8 +215,6 @@
     obj.anotherProp = 56;
     log(obj.anotherProp);
 
-    // obj.constructor is predefined
-
 }());
 
 // Prototype Chain
@@ -183,7 +224,7 @@
     var obj = { property: "value" };
 
     function MyClass() {
-        this.anotherProp = "something";
+        this.ownProperty = "something";
     }
     MyClass.prototype = obj;
 
@@ -192,13 +233,14 @@
     var prop;
     for (prop in newObj) {
         log(prop);
+        log(newObj[prop]);
     }
-    // "anotherProp"
-    // "property"
+
+    log(newObj.toString());
 
 }());
 
-// Better Object Property Enumeration
+// Better for...in
 (function () {
     "use strict";
 
@@ -215,9 +257,29 @@
     for (prop in newObj) {
         if (newObj.hasOwnProperty(prop)) {
             log(prop);
+            log(newObj[prop]);
         }
     }
-    // "anotherProp"
+}());
+
+// Inheritance
+(function () {
+    "use strict";
+
+    function BaseClass() {
+        this.property = "base value";
+    }
+
+    function InheritedClass() {
+        this.ownProperty = "own value";
+    }
+
+    InheritedClass.prototype = new BaseClass();
+
+    var obj = new InheritedClass();
+
+    log(obj.ownProperty);
+    log(obj.property);
 
 }());
 
@@ -225,25 +287,40 @@
 (function () {
     "use strict";
 
-    var arr = [1, 2, 3];
+    var arr = [1, 2, 3, 4];
     log(arr.length);
 
-    arr.push("4");
-    arr.pop();
-    arr.unshift([0]);
-    arr.shift();
-    arr[4] = "value";
-    arr.splice(1, 4, "2", "3");
+    arr.push(5);                    log(arr);
+    arr.pop();                      log(arr);
+    arr.unshift(0);                 log(arr);
+    arr.shift();                    log(arr);
 
-    log(arr.concat(4));
-    log(arr.concat([4]));
+    arr.splice(1, 2);               log(arr);
+    arr.splice(1, 0, 20, 25, 30);   log(arr);
 
-    log(arr[-1]);
-    log(arr[1]);
-    log(arr[3]);
+    log(arr.concat([5]));
+    log(arr.concat(5));
 
 }());
+// Arrays can contain multiple types
+(function () {
+    "use strict";
 
+    var arr = ["one", 2, [1, 2, 3]];
+
+    log(arr);
+    log(arr[2][2]);
+
+    // another way to `push`
+    arr[arr.length] = function () { return 100; };
+
+    log(arr[3].toString());
+    log(arr[3]());
+
+    // Out of bounds
+    log(arr[-1]);
+    log(arr[100]);
+}());
 // Arrays are Objects!
 (function () {
     "use strict";
@@ -263,8 +340,26 @@
 
     // Since object keys can only be strings
     log(arr["1"]);
+}());
+// Array Enumeration
+(function () {
+    "use strict";
 
-    // Don't use for-in loops with arrays
+    var arr = ["zero", "one"];
+
+    log("Using regular for loop");
+    for (var i = 0; i < arr.length ; i++) {
+        log(i);
+        log(arr[i]);
+    }
+
+    log("Using Array#forEach");
+    // native in ES5 (needs a library in ES3)
+    arr.forEach(function (value, index) {
+        log(index);
+        log(value);
+    });
+
 }());
 
 // && and ||
@@ -279,43 +374,63 @@
     log(obj && obj.func && obj.func());
 
     // Default Operator
-    log(obj.nope || obj.func() || 100);
-}());
+    obj.property = obj.property || obj.func();
+    log(obj.property);
 
-// Throw stuff!
-(function () {
-    "use strict";
-
-    var error = new Error("reason for blow-up"),
-        anything = {
-            code: 201,
-            message: "haha"
-        };
-
-    throw error;
-    throw anything;
-    throw 4;
-    throw [2, 4];
-
-    // Function execution stops at first throw
 }());
 
 // Exception Handling
 (function () {
     "use strict";
 
+    var obj = {};
+
     try {
 
-        log("this about to throw up");
-        throw {
-            code: 201,
-            message: "haha"
-        };
-        log("this never to show up");
+        log(1/0);
+        obj.nonExistentFunc();
 
     } catch (e) {
-        log(e.message);
+        log("error caught, no harm done.");
+        log(e.name + ": " + e.message);
     }
+
+    "here".is.an = "uncaught error";
+    
+}());
+// Throw your own errors
+(function () {
+    "use strict";
+
+    try {
+
+        throw new Error("My custom error");
+
+    } catch (e) {
+        log(e.toString());
+
+        try {
+            throw new TypeError("Why U Mix Types");
+        } catch (err) {
+            log(err.toString());
+        }
+    }
+
+}());
+// Throw anything
+(function () {
+    "use strict";
+
+    var anything = {
+        code: 201,
+        name: "SomeErrorClass",
+        message: "Just got thrown",
+        toString: function () {
+            return "[ " + this.name + ": " + this.message + " ]";
+        }
+    };
+
+    throw anything;
 
 }());
 

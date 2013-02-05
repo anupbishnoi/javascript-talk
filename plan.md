@@ -23,9 +23,17 @@ Functions (are Objects)
 
 `arguments` array (not!)
 
+functions
+
+this
+
 Function.apply, Function.call
 
 Comments
+
+Debugger
+
+try catch
 
 Semicolon
 
