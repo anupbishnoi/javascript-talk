@@ -442,7 +442,7 @@ globalVar = "global value";
     var obj = { property: "value" };
 
     function MyClass() {
-        this.anotherProp = "something";
+        this.ownProperty = "something";
     }
     MyClass.prototype = obj;
 
@@ -529,7 +529,7 @@ globalVar = "global value";
     // another way to `push`
     arr[arr.length] = function () { return 100; };
 
-    log(arr[3]);
+    log(arr[3].toString());
     log(arr[3]());
 
     // Out of bounds

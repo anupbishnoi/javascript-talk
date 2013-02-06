@@ -6,7 +6,7 @@
     window.log = function (arg) {
         if (typeof arg === "function") {
             logQueue.push(arg);
-        } else if (typeof arg === "object") {
+        } else if (typeof arg === "object" || arg == null || typeof arg === "string") {
             logQueue.push("<pre>" + JSON.stringify(arg) + "</pre>");
         } else {
             logQueue.push("<pre>" + arg.toString() + "</pre>");
