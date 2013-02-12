@@ -19,24 +19,6 @@ Links
 * [JS Glossary](https://developer.mozilla.org/en-US/docs/JavaScript/Glossary)
 
 
-Functions (are Objects)
-
-`arguments` array (not!)
-
-functions
-
-this
-
-Function.apply, Function.call
-
-Comments
-
-Debugger
-
-try catch
-
-Semicolon
-
 JSON
 
 JSLINT

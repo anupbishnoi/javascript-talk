@@ -16,6 +16,7 @@
     };
 }());
 // Prevents unintended global namespace pollution
+/*global globalVar:true, str:true */
 globalVar = "global value";
 (function () {
     "use strict";
@@ -25,6 +26,7 @@ globalVar = "global value";
     str = "global";
 
 }());
+/*global globalVar:false, str:false */
 
 // Variables
 (function () {
@@ -43,6 +45,7 @@ globalVar = "global value";
 
 }());
 // Variable scope is simply the function scope
+/*global inner:true */
 (function () {
     "use strict";
 
@@ -61,23 +64,27 @@ globalVar = "global value";
     log(inner);
 
 }());
+/*global inner:false */
+
 // `function` declarations get "hoisted" at top of scope
+/*jshint latedef:false */
 (function () {
     "use strict";
 
     var func1,
-        func2 = function () { return "func2"; };
+        func2 = function () { return "function 2"; };
 
     log(func1);
     log(func2());
     log(func3());
 
-    func1 = function () { return "func1"; };
+    func1 = function () { return "function 1"; };
     log(func1());
 
-    function func3() { return "func3"; }
+    function func3() { return "function 3"; }
 
 }());
+/*jshint latedef:true */
 
 // Types can be changed at runtime.
 (function () {
@@ -143,6 +150,7 @@ globalVar = "global value";
 }());
 
 // Wrong Equality Checking
+/*jshint eqeqeq:false, eqnull:false */
 (function () {
     "use strict";
 
@@ -157,9 +165,10 @@ globalVar = "global value";
     log(24 == "twenty four");
     log(24 == "24");
 
-    log(null == undefined);
+    log(undefined == null);
 
 }());
+/*jshint eqeqeq:true, eqnull:true */
 
 // Correct Equality Checking
 (function () {
@@ -218,6 +227,7 @@ globalVar = "global value";
 }());
 
 // Prototype Chain
+/*jshint forin:false */
 (function () {
     "use strict";
 
@@ -239,6 +249,7 @@ globalVar = "global value";
     log(newObj.toString());
 
 }());
+/*jshint forin:true */
 
 // Better for...in
 (function () {
@@ -284,6 +295,7 @@ globalVar = "global value";
 }());
 
 // Arrays
+/*jshint white:false */
 (function () {
     "use strict";
 
@@ -302,6 +314,8 @@ globalVar = "global value";
     log(arr.concat(5));
 
 }());
+/*jshint white:true */
+
 // Arrays can contain multiple types
 (function () {
     "use strict";
@@ -387,7 +401,7 @@ globalVar = "global value";
 
     try {
 
-        log(1/0);
+        log(1 / 0);
         obj.nonExistentFunc();
 
     } catch (e) {
@@ -434,5 +448,398 @@ globalVar = "global value";
 
 }());
 
-// Functions
+// debugger
+(function () {
+    "use strict";
 
+    var a = 10;
+    
+    debugger;
+
+    var doubleValue = function (num) {
+        var result = num * 2;
+        return result;
+    };
+
+    log(doubleValue(a));
+
+}());
+
+// setTimeout
+(function () {
+    "use strict";
+
+    alert("legen... wait for it...");
+
+    setTimeout(function () {
+
+        alert("...dary");
+
+    }, 4000);
+
+}());
+
+// Specify arguments
+(function () {
+    "use strict";
+
+    alert("legen... wait for it...");
+
+    setTimeout(function (remaining) {
+
+        alert("..." + remaining);
+        
+    }, 4000, "dary");
+
+}());
+
+// Clear timeout
+(function () {
+    "use strict";
+
+    var id = setTimeout(function () {
+
+        alert("ran successfully");
+        
+    }, 4000);
+
+    clearTimeout(id);
+
+}());
+
+// setInterval and clearInterval
+(function () {
+    "use strict";
+
+    var id = setInterval(function (value) {
+
+        alert(value);
+        
+    }, 2000, "knock knock");
+
+
+    setTimeout(function () {
+        clearInterval(id);
+    }, 10000);
+
+}());
+
+/* Advanced Concepts */
+
+// Immediately Invoked Function Expression
+(function () {
+    "use strict";
+
+    (function () {
+        
+        (function () {
+        
+            log("getting logged");
+            
+        }());
+    }());
+
+}());
+
+// Functions are first-class variables
+(function () {
+    "use strict";
+
+    function shout() {
+        log("Function ran!");
+    }
+
+    function callFunction(f) {
+        f();
+    }
+
+    callFunction(shout);
+
+}());
+
+// Every function returns something
+(function () {
+    "use strict";
+
+    function func1() {
+        log("function 1 called");
+        return "return value";
+    }
+    
+    function func2() {
+        log("function 2 called");
+    }
+
+    log(func1());
+
+    log(func2());
+
+}());
+
+// Function closures
+(function () {
+    "use strict";
+
+    function adder(howMany) {
+        return function (num) {
+            return howMany + num;
+        };
+    }
+
+    var twoPlus = adder(2);
+
+    log(twoPlus(9));
+
+}());
+
+// Private Variables
+(function () {
+    "use strict";
+
+    var lady;
+    lady = { age: 20 };
+    lady.age = 40;
+    log(lady.age);
+
+    lady = (function () {
+        var age = 20;
+        return {
+            getAge: function () { return age; }
+        };
+    }());
+
+    log(lady.age);
+    log(lady.getAge());
+}());
+
+// Functions are Objects!
+(function () {
+    "use strict";
+
+    var func1 = function () {};
+
+    func1.someValue = "some value";
+    log(func1.someValue);
+
+    function func2() {
+        log("function 2 ran");
+        func2.someProperty = "some property";
+    }
+    log(func2.someProperty);
+
+    func2();
+    log(func2.someProperty);
+
+}());
+
+// What does `this` mean?
+window.someProperty = "some property";
+function funcOutside() {
+    log(this.someProperty);
+}
+(function () {
+    "use strict";
+
+    function funcInStrictMode() {
+        log(this.someProperty);
+    }
+
+    funcOutside();
+    funcInStrictMode();
+}());
+
+// new MyClass
+(function () {
+    "use strict";
+
+    function MyClass() {
+        this.property = "value";
+    }
+
+    var obj = new MyClass();
+    
+    log(obj.property);
+
+}());
+
+// Function context
+(function () {
+    "use strict";
+
+    var obj = {
+        property: "value",
+        func: function () {
+
+            log(this.property);
+
+        }
+    };
+
+    obj.func();
+
+}());
+
+// Calling obj is `this`
+(function () {
+    "use strict";
+
+    function logWhich() {
+        log(this.which);
+    }
+
+    var obj1 = {
+        which: "object 1",
+        func: logWhich
+    };
+    var obj2 = {
+        which: "object 2",
+        func: logWhich
+    };
+
+    obj1.func();
+    obj2.func();
+
+}());
+
+// Function call
+(function () {
+    "use strict";
+
+    function func() {
+        log(this.property);
+    }
+
+    func.call({ property: "value" });
+
+}());
+
+// Call with arguments
+(function () {
+    "use strict";
+
+    function func(arg1, arg2) {
+        log(this.property);
+        log(arg1);
+        log(arg2);
+    }
+
+    func.call({ property: "value" }, 10, "20");
+
+}());
+
+// Apply arguments to function
+(function () {
+    "use strict";
+
+    function func(arg1, arg2) {
+        log(this.property);
+        log(arg1);
+        log(arg2);
+    }
+
+    func.apply({ property: "value" }, [10, "20"]);
+
+}());
+
+// arguments array (array-like)
+(function () {
+    "use strict";
+
+    function func() {
+        log(this);
+        for (var i = 0; i < arguments.length; i++) {
+            log(arguments[i]);
+        }
+    }
+
+    func.call("context", "argument 1", "argument 2");
+}());
+
+// wrap a function
+(function () {
+    "use strict";
+
+    function wrap(f) {
+        return function () {
+            log("wrapped function being run");
+            return f.apply(this, arguments);
+        };
+    }
+
+    function square(arg) {
+        return arg * arg;
+    }
+
+    var wrappedSquare = wrap(square);
+
+    log(wrappedSquare(5));
+}());
+
+// Function bound context
+(function () {
+    "use strict";
+
+    function func() {
+        log(this.property);
+    }
+
+    var bound = func.bind({ property: "value" });
+
+    func();
+    bound();
+
+}());
+
+// bound with arguments
+(function () {
+    "use strict";
+
+    function func(arg1, arg2) {
+        log(this);
+        log(arg1);
+    }
+
+    var bound = func.bind("bound context", "argument 1");
+
+    bound("passed context", "more arguments");
+
+}());
+
+// Semicolons are optional
+/*jshint asi:true, white:false */
+(function () {
+
+    [1, 2, 3].forEach(function (value) {
+        log(value)
+    })
+    
+    var a = 10
+
+}())
+
+;
+// with problems
+(function () {
+    
+    var a = 10
+
+    [1, 2, 3].forEach(function (value) {
+        log(value)
+    })
+
+}())
+/*jshint asi:false, white:true */
+;
+
+// JSON
+{
+    "key": "in double quotes",
+    "object": {
+        "nested": 1,
+        "functions": "not allowed",
+        "canPassThemAs": "function () {}"
+    },
+    "array": ["is", "the", { "same": "as before" }],
+    "null": null,
+    "undefined": "not allowed"
+}

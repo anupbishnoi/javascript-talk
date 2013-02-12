@@ -45,46 +45,49 @@
                     var slideKey = currentSlideKeyFromElem(e.currentTarget);
                     window.snippets[slideKey] = $(e.currentTarget).text();
                     logQueue = [];
+                    showingLogs = false;
                 });
         });
     }
 
     var humane = window.humane;
-    var bigbox = window.bigbox = humane.create({
-        baseCls: "humane-bigbox",
+    var logger = window.logger = humane.create({
+        baseCls: "humane-jackedup",
         timeout: 3000
     });
-    bigbox.success = bigbox.spawn({
-        addnCls: "humane-bigbox-success",
+    logger.success = logger.spawn({
+        addnCls: "humane-jackedup-success",
         timeout: 1000
     });
-    bigbox.error = bigbox.spawn({
-        addnCls: "humane-bigbox-error",
+    logger.error = logger.spawn({
+        addnCls: "humane-jackedup-error",
         timeout: 4000
     });
-    bigbox.info = bigbox.spawn({
-        addnCls: "humane-bigbox-info",
+    logger.info = logger.spawn({
+        addnCls: "humane-jackedup-info",
         timeout: 1000
     });
 
     var previousSlideKey = null;
+    var showingLogs = false;
     window.showLog = function showLog() {
         var slideKey = currentSlideKey(),
             logToShow;
 
         if (slideKey === previousSlideKey) {
-            bigbox.remove();
+            logger.remove();
             if (logQueue.length) {
                 logToShow = logQueue.shift();
                 if (typeof logToShow === "function") {
                     logToShow();
                 } else {
-                    bigbox.log(logToShow);
+                    logger.log(logToShow);
                 }
             }
         } else {
             logQueue = [];
             window.runCode();
+            showingLogs = false;
         }
     };
 
@@ -92,7 +95,7 @@
         var slideKey = currentSlideKey();
 
         previousSlideKey = slideKey;
-        bigbox.remove();
+        logger.remove();
         if (window.snippets[slideKey] != null) {
             logQueue = [];
             setTimeout(function () {
@@ -100,26 +103,33 @@
                     eval(window.snippets[slideKey]);
                 } catch (e) {
                     log(function () {
-                        bigbox.error(
+                        logger.error(
                             e.hasOwnProperty("toString") ?
                                 e.toString() :
                                 e.name + ": " + e.message
                         );
                     });
                 } finally {
-                    bigbox.info("Loaded");
+                    logger.info("Loaded");
                 }
             }, 1);
         } else {
-            bigbox.error("No code on this slide.");
+            logger.error("No code on this slide.");
         }
     };
 
     window.runCodeAndShowLog = function () {
-        if (!logQueue.length) {
+        if (!showingLogs || previousSlideKey !== currentSlideKey()) {
             window.runCode();
+            showingLogs = true;
         } else {
-            window.showLog();
+            if (!logQueue.length) {
+                logger.remove();
+                logger.info("Done");
+                showingLogs = false;
+            } else {
+                window.showLog();
+            }
         }
     };
 
