@@ -1,6 +1,7 @@
 (function () {
 
     window.snippets = {};
+    window.codeblocks = {};
 
     var logQueue = [];
     window.log = function (arg) {
@@ -35,6 +36,7 @@
                 .each(function (i, block) {
                     var slideKey = currentSlideKeyFromElem(block);
                     window.snippets[slideKey] = $(block).text();
+                    window.codeblocks[slideKey] = $(block);
 
                     $("<div class='run-code' title='Run Code'></div>")
                         .insertBefore($(block).closest("pre"))
@@ -119,18 +121,25 @@
     };
 
     window.runCodeAndShowLog = function () {
-        if (!showingLogs || previousSlideKey !== currentSlideKey()) {
-            window.runCode();
-            showingLogs = true;
-        } else {
-            if (!logQueue.length) {
-                logger.remove();
-                logger.info("Done");
-                showingLogs = false;
-            } else {
-                window.showLog();
-            }
+        var slideKey = currentSlideKey();
+
+        if (window.snippets[slideKey] !== window.codeblocks[slideKey].text()) {
+            window.codeblocks[slideKey].blur();
         }
+        setTimeout(function () {
+            if (!showingLogs || previousSlideKey !== slideKey) {
+                window.runCode();
+                showingLogs = true;
+            } else {
+                if (!logQueue.length) {
+                    logger.remove();
+                    logger.info("Done");
+                    showingLogs = false;
+                } else {
+                    window.showLog();
+                }
+            }
+        }, 10);
     };
 
     Reveal.initialize({
