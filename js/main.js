@@ -174,19 +174,11 @@
     });
 
     new Remotes("preview")
-        .on("swipe-left", function (e) {
-            Reveal.right();
-        })
-        .on("swipe-right", function (e) {
-            Reveal.left();
-        })
-        .on("swipe-up", function (e) {
-            Reveal.down();
-        })
-        .on("swipe-down", function (e) {
-            Reveal.up();
-        })
-        .on("tap", runCodeAndShowLog);
-
+        .on("swipe-left", Reveal.right)
+        .on("swipe-right", Reveal.left)
+        .on("swipe-up", Reveal.down)
+        .on("swipe-down", Reveal.up)
+        .on("tap", runCodeAndShowLog)
+        .on("hold", Reveal.toggleOverview);
 
 }());
