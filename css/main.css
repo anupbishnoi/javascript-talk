@@ -1,15 +1,20 @@
 .nagarroAG-logo {
     position: fixed;
-    top: 0;
-    right: 0;
+    top: -15px;
+    right: -22px;
     width: 236px;
     height: 94px;
     opacity: 0.5;
+    -webkit-transform: scale(0.8);
     background: url(../images/nagarroAG.png) no-repeat;
 }
 
-.reveal code {
-    max-height: 490px;
+body > .reveal {
+  font-size: 30px;
+}
+
+body > .reveal code {
+    max-height: 400px;
 }
 
 .run-code {

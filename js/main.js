@@ -153,7 +153,6 @@
         loop: false,
         rtl: false,
         autoSlide: 0,
-        mouseWheel: true,
         rollingLinks: true,
 
         theme: "sky",
